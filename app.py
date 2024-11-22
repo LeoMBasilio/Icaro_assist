@@ -1,52 +1,78 @@
+import os
+from time import sleep
 from controllers.FinaceController import Finace
-from models.Usuarios import Usuarios
-from models.ConcetDb import DbConnect
+from uuid import uuid4
 
-def finace_menu(user):
-    print("Bem vindo ao se Controle Finaceiro")
-    print("1. Cadastrar")
-    print("2. Listar")
-    print("3. Editar")
-    print("4. Excluir")
-    print("0. Sair")
-
+def finace_menu():
+    os.system('cls')
     finace = Finace()
+    while True:
 
-    match int(input("Enter your choice: ")):
-        case 1:
-            if not finace.getDispesas():
-                nome = input("Nome: ")
-                valor = input("Valor: ")
-                datainit = input("Data Inicial: ")
-                datafim = input("Data Final: ")
-                usuario = input("Usuario: ")
+        print("Bem vindo ao se Controle Finaceiro")
+        print("1. Cadastrar")
+        print("2. Listar")
+        print("3. Editar")
+        print("4. Excluir")
+        print("0. Sair")
 
-                finace.addDispesas(nome, valor, datainit, datafim, usuario)
-      
-        case 0:
-            menu()
+
+        match int(input("Enter your choice: ")):
+            case 1:
+                name = str(input("Digite o nome da despesa: "))
+                value = float(input("Digite o valor da despesa: "))
+                start_date = str(input("Digite a data de inicio: "))
+                end_date = str(input("Digite a data de fim: "))
+
+                if finace.add_dispesa({
+                    'id': str(uuid4()),
+                    'name': name,
+                    'value': value,
+                    'start_date': start_date,
+                    'end_date': end_date
+                }):
+                    print("Despesa cadastrada com sucesso")
+                else:
+                    print("Erro ao cadastrar despesa")
+
+                sleep(1)
+                os.system('cls')
+
+            case 2:
+                os.system('cls')
+                finace.get_all_dispesas()
+
+                input("Pressione Enter para continuar...")
+                os.system('cls')
+
+            case 3:
+                pass
+            case 4:
+                pass
+            case 0:
+                os.system('cls')
+                break
 
 
 def menu():
-    print("Ola sou Icaro, seja bem vindo")
+    print(fr"""
+          ,'""`.
+         / _  _ \
+         |(@)(@)|
+         )  __  (
+        /,'))((`.\
+       (( ((  )) ))      OLA SOU ICARO SEJA BEM VINDO 
+        `\ `)(' /'
+    """)
 
-    name = str(input("Digite seu nome: "))
-    email = str(input("Digite seu email: "))
-    telefone = str(input("Digite seu telefone: "))
-    renda = str(input("Digite sua renda: "))
-
-    newUser = Usuarios(name, email, telefone, renda)
-
-    if not newUser.get_user():
-        newUser.insert()
 
     while True:
         match int(input("1. Finace\n0. Exit\nEnter your choice: ")):
             case 1:
-                Finace(newUser)
-            case _:
+                finace_menu()
+            case 0:
                 exit()
+            case _:
+                print("Invalid choice")
 
 if __name__ == "__main__":
-    DbConnect().init_dataBase()
     menu()

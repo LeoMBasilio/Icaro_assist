@@ -1,12 +1,26 @@
 import sqlite3
 
-class database:
+class Database:
     def __init__(self, db):
         self.conn = sqlite3.connect(db)
         self.cursor = self.conn.cursor()
     
+    def create_table(self, table, columns):
+        key = ''
+        for i in columns:
+            key += f'{i} {columns[i]}, '
+
+        query = f'''
+            CREATE TABLE IF NOT EXISTS {table}(
+                {key[:-2]}
+            );
+        '''
+        if self.cursor.execute(query):
+            self.conn.commit()
+            print(f'Table {table} created successfully')
+
     def get_all(self, table):
-        self.cursor.execute("select * from ", table)
+        self.cursor.execute(f"select * from {table}")
         return self.cursor.fetchall()
 
     def insert_values(self, table, values):
@@ -15,7 +29,7 @@ class database:
             value = ''
             for i in values:
                 key += f'{i}, '
-                value += f'{values[i]}, '
+                value += f'"{values[i]}", '
             
             query = f'''
                 INSERT INTO {table}({key[:-2]}) VALUES ({value[:-2]});

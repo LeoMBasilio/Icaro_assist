@@ -1,40 +1,30 @@
-from models.Dispesas import Dispesas
-from models.Usuarios import Usuarios
-
-class Finace(Dispesas):
-    def __init__(self, user, dispesas):
-        self.dispesas = Dispesas()
-        self.usuarios = user
-
-    def getDispesas(self):
-        resp = self.dispesas.get_valores()
-        if resp:
-            result = {
-                "user": self.usuarios.get_user(),
-                "valor": resp['valor']
+from models.DataBaseModel import Database
+class Finace:
+    def __init__(self):
+        self.db = Database('db/finace.db')
+        self.table = {
+            'table': 'finace',
+            'columns': {
+                'id': 'TEXT PRIMARY KEY',
+                'name': 'TEXT',
+                'value': 'REAL',
+                'start_date': 'TEXT',
+                'End_date': 'TEXT'
             }
+        }
 
-            return result
-        else:
-            return None
+        self.db.create_table(self.table['table'], self.table['columns'])
 
-    def getUsuarios(self):
-        return self.usuarios.get_user()
+    def add_dispesa(self, values):
+        return self.db.insert_values(self.table['table'], values)
+    
+    def get_all_dispesas(self):
+        despesas = self.db.get_all(self.table['table'])
+        print('Despesas Cadastradas')
+        print(f'{"id".ljust(36)} | {"Nome".ljust(25)} | {"Valor".ljust(25)} | {"Data de Inicio".ljust(25)} | Data de Fim')
+        for i in despesas:
+            print(f'{i[0]} | {i[1].ljust(25)} | {str(i[2]).ljust(25)} | {i[3].ljust(25)} | {i[4]}')
+            
 
-    def addDispesas(self, nome, valor, datainit, datafim, usuario):
-        self.dispesas.addDispesas(nome, valor, datainit, datafim, usuario)
-
-    def addUsuarios(self, nome, email, telefone, renda):
-        self.usuarios.addUsuarios(nome, email, telefone, renda)
-
-    def deleteDispesas(self, id):
-        self.dispesas.deleteDispesas(id)
-
-    def deleteUsuarios(self, id):
-        self.usuarios.deleteUsuarios(id)
-
-    def updateDispesas(self, id, nome, valor, data, usuario):
-        self.dispesas.updateDispesas(id, nome, valor, data, usuario)
-
-    def updateUsuarios(self, id, nome, email, senha):
-        self.usuarios.updateUsuarios(id, nome, email, senha)
+    def get_dispesa(self, condition):
+        pass
